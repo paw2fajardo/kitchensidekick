@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kitchen Workflow Board - 1024px Collapse Verification</title>
+    <style>
+      :root {
+        --color-canvas: #F5F5F0;
+        --color-surface: #FFFFFF;
+        --color-surface-subtle: #ECEDE7;
+        --color-text-primary: #20251F;
+        --color-text-secondary: #5F675F;
+        --color-border: #D9DDD4;
+        --color-primary: #245C43;
+        --color-primary-hover: #194A35;
+        --color-phase-prep: #537B60;
+        --color-phase-sauce: #B17A3D;
+        --color-phase-sauce-text: #8A5A22;
+        --color-phase-cooking: #A65B45;
+        --color-warning: #A86416;
+        --color-success: #287A4B;
+        --color-info: #356B8C;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--color-canvas);
+        color: var(--color-text-primary);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "Geist", Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+      header {
+        background: var(--color-surface);
+        border-bottom: 1px solid var(--color-border);
+        padding: 14px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      h1 {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0;
+      }
+      .board-wrapper {
+        display: flex;
+        width: 100%;
+        min-height: calc(100vh - 73px);
+      }
+      .board-canvas {
+        flex: 1;
+        padding: 24px;
+        min-width: 0;
+      }
+      .drawer-320 {
+        width: 320px;
+        background: var(--color-surface);
+        border-left: 1px solid var(--color-border);
+        padding: 24px;
+        flex-shrink: 0;
+      }
+      .sticky-switcher {
+        display: none;
+        background: var(--color-surface);
+        border-bottom: 1px solid var(--color-border);
+        padding: 10px 16px;
+      }
+      .switcher-group {
+        display: flex;
+        gap: 8px;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .switcher-tab {
+        flex: 1;
+        min-height: 48px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        background: var(--color-surface-subtle);
+        font-size: 15px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+      .switcher-tab.active {
+        background: #E4EEE7;
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+      }
+      .lanes-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+      /* 1024px iPad Landscape Rule with Drawer: Collapse to 1 lane */
+      @media (max-width: 1080px) {
+        .sticky-switcher {
+          display: block;
+        }
+        .lanes-container {
+          grid-template-columns: 1fr;
+          max-width: 640px;
+          margin: 0 auto;
+        }
+        .lane-hide-on-collapse {
+          display: none;
+        }
+      }
+      .task-card {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        box-shadow: none;
+      }
+      .task-card.phase-prep { border-left: 4px solid var(--color-phase-prep); }
+      .task-card.phase-sauce { border-left: 4px solid var(--color-phase-sauce); }
+      .task-card.phase-cooking { border-left: 4px solid var(--color-phase-cooking); }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+      .task-title {
+        font-size: 19px;
+        font-weight: 600;
+        margin: 0;
+      }
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .badge-ready { background: #E4EEE7; color: var(--color-primary); }
+      .badge-in-progress { background: #EBF3F8; color: var(--color-info); }
+      .badge-blocked { background: #FDF4E7; color: #8A4E0B; }
+      .badge-completed { background: #E6F3EC; color: var(--color-success); }
+      .touch-btn {
+        min-height: 48px;
+        min-width: 48px;
+        padding: 0 16px;
+        border-radius: 10px;
+        border: 1px solid var(--color-border);
+        background: var(--color-surface);
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .primary-cta {
+        min-height: 56px;
+        background: var(--color-primary);
+        color: #FFFFFF;
+        border: none;
+        font-size: 17px;
+        font-weight: 600;
+        border-radius: 10px;
+        width: 100%;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Workflow Board</h1>
+      <button class="touch-btn" type="button">Ingredient Drawer (Open)</button>
+    </header>
+
+    <div class="sticky-switcher">
+      <div class="switcher-group">
+        <button class="switcher-tab active" type="button">Prep Phase (5)</button>
+        <button class="switcher-tab" type="button">Sauce Lane (4)</button>
+        <button class="switcher-tab" type="button">Cooking Phase (5)</button>
+      </div>
+    </div>
+
+    <div class="board-wrapper">
+      <main class="board-canvas">
+        <div class="lanes-container">
+          <!-- Active Single Lane in Collapse Mode -->
+          <section>
+            <h2 style="font-size: 20px; font-weight: 650; margin-top: 0; margin-bottom: 16px;">Prep Phase</h2>
+            <article class="task-card phase-prep">
+              <div class="card-header">
+                <div>
+                  <h3 class="task-title">Cut vegetables & press tofu</h3>
+                  <span style="font-size: 15px; color: var(--color-text-secondary);">15 min</span>
+                </div>
+                <span class="status-badge badge-ready">Ready</span>
+              </div>
+              <p style="font-size: 16px; color: var(--color-text-secondary); line-height: 1.5; margin: 0;">
+                Press firm momen tofu for 15 minutes. Slice Tokyo negi diagonally into 4 cm pieces.
+              </p>
+              <div style="padding-top: 12px; border-top: 1px solid var(--color-border);">
+                <button class="touch-btn" style="background: var(--color-primary); color: #FFF; width: 100%; border: none;" type="button">Start Task</button>
+              </div>
+            </article>
+          </section>
+
+          <!-- Hidden when collapsed on 1024px with drawer open -->
+          <section class="lane-hide-on-collapse">
+            <h2 style="font-size: 20px; font-weight: 650; margin-top: 0; margin-bottom: 16px;">Sauce Lane</h2>
+            <article class="task-card phase-sauce">
+              <div class="card-header">
+                <h3 class="task-title">Combine warishita</h3>
+                <span class="status-badge badge-in-progress">In progress</span>
+              </div>
+            </article>
+          </section>
+
+          <section class="lane-hide-on-collapse">
+            <h2 style="font-size: 20px; font-weight: 650; margin-top: 0; margin-bottom: 16px;">Cooking Phase</h2>
+            <article class="task-card phase-cooking">
+              <div class="card-header">
+                <h3 class="task-title">Sear ribeye</h3>
+                <span class="status-badge badge-blocked">Blocked</span>
+              </div>
+            </article>
+          </section>
+        </div>
+      </main>
+
+      <aside class="drawer-320">
+        <h2 style="font-size: 20px; font-weight: 650; margin-top: 0; margin-bottom: 16px;">Mise-en-place</h2>
+        <p style="font-size: 15px; color: var(--color-text-secondary); margin-bottom: 20px;">Binary prep status tracking</p>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+          <label style="min-height: 48px; display: flex; align-items: center; gap: 10px; font-size: 16px; cursor: pointer;">
+            <input type="checkbox" style="width: 22px; height: 22px;" checked />
+            <span>Firm tofu (350 g)</span>
+          </label>
+          <label style="min-height: 48px; display: flex; align-items: center; gap: 10px; font-size: 16px; cursor: pointer;">
+            <input type="checkbox" style="width: 22px; height: 22px;" />
+            <span>Tokyo negi (2 stalks)</span>
+          </label>
+          <label style="min-height: 48px; display: flex; align-items: center; gap: 10px; font-size: 16px; cursor: pointer;">
+            <input type="checkbox" style="width: 22px; height: 22px;" />
+            <span>Koikuchi shoyu (100 ml)</span>
+          </label>
+        </div>
+        <button class="primary-cta" type="button">Mark All Prepared</button>
+      </aside>
+    </div>
+  </body>
+</html>

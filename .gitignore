@@ -37,7 +37,11 @@ out/
 .next/
 .turbo/
 
-# Skills tool multi-agent mirror directories (keep .agents/ where canonical skills live)
+# Taste skill artifacts & reports
+.taste-skill/
+*report*.md
+
+# Multi-agent mirror directories
 .adal/
 .aider-desk/
 .augment/
