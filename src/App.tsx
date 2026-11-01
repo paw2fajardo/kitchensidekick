@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AppShell } from './components/layout/AppShell';
 import type { ScreenId } from './components/layout/AppShell';
 import { RecipeLibrary } from './components/screens/RecipeLibrary';
@@ -143,6 +143,27 @@ export const App: React.FC = () => {
     })),
   });
 
+  // Synchronize internal screen & slug with browser URL path and parameters
+  const updateUrl = useCallback((screen: ScreenId, slug: string) => {
+    let targetPath = '/recipes';
+    if (screen === 'overview') {
+      targetPath = `/recipes/${encodeURIComponent(slug)}`;
+    } else if (screen === 'cooking') {
+      targetPath = `/recipes/${encodeURIComponent(slug)}/cooking`;
+    } else if (screen === 'celebration') {
+      targetPath = `/recipes/${encodeURIComponent(slug)}/celebration`;
+    }
+
+    if (window.location.pathname !== targetPath) {
+      window.history.pushState({ screen, slug }, '', targetPath);
+    }
+  }, []);
+
+  const navigateToScreen = useCallback((screen: ScreenId) => {
+    setCurrentScreen(screen);
+    updateUrl(screen, selectedRecipe.slug);
+  }, [selectedRecipe.slug, updateUrl]);
+
   const completedCount = tasks.filter((t) => t.status === 'completed').length;
   const sessionBadge = `${completedCount}/${tasks.length} steps completed`;
 
@@ -242,8 +263,57 @@ export const App: React.FC = () => {
       }
     } finally {
       setCurrentScreen('overview');
+      updateUrl('overview', recipeSummary.slug);
     }
   };
+
+  // Handle browser popstate navigation (Back / Forward buttons)
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      const state = event.state;
+      if (state && state.screen) {
+        setCurrentScreen(state.screen);
+      } else {
+        // Fallback parse from window.location.pathname
+        const path = window.location.pathname;
+        if (path === '/' || path === '/recipes') {
+          setCurrentScreen('library');
+        } else if (path.endsWith('/cooking')) {
+          setCurrentScreen('cooking');
+        } else if (path.endsWith('/celebration')) {
+          setCurrentScreen('celebration');
+        } else if (path.startsWith('/recipes/')) {
+          setCurrentScreen('overview');
+        }
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Initial load URL routing & deep link support
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path.startsWith('/recipes/')) {
+      const parts = path.split('/').filter(Boolean); // ['recipes', 'slug', 'cooking'?]
+      if (parts.length >= 2) {
+        const slug = decodeURIComponent(parts[1]);
+        const subRoute = parts[2];
+        if (subRoute === 'cooking') {
+          setCurrentScreen('cooking');
+        } else if (subRoute === 'celebration') {
+          setCurrentScreen('celebration');
+        } else {
+          setCurrentScreen('overview');
+        }
+        // If it's a different slug than canonical default, trigger load
+        if (slug && slug !== selectedRecipe.slug) {
+          handleSelectOrGenerateRecipe({ id: slug, slug, name: slug });
+        }
+      }
+    }
+  }, []);
 
   const handleCompleteTask = (taskId: string) => {
     setTasks((prev) => {
@@ -266,7 +336,7 @@ export const App: React.FC = () => {
       setActiveTaskId(tasks[currentIndex + 1].id);
     } else {
       // Completed the final step: celebrate meal completion!
-      setCurrentScreen('celebration');
+      navigateToScreen('celebration');
     }
   };
 
@@ -296,11 +366,11 @@ export const App: React.FC = () => {
   return (
     <AppShell
       currentScreen={currentScreen}
-      onNavigate={setCurrentScreen}
+      onNavigate={navigateToScreen}
       recipeTitle={selectedRecipe.name}
       activeSessionBadge={sessionBadge}
       isCookingMode={currentScreen === 'cooking'}
-      onExitCooking={() => setCurrentScreen('overview')}
+      onExitCooking={() => navigateToScreen('overview')}
     >
       {/* Screen 1: Recipe Library */}
       {currentScreen === 'library' && (
@@ -322,7 +392,7 @@ export const App: React.FC = () => {
           yieldServings={selectedRecipe.yieldServings}
           ingredients={selectedRecipe.ingredients}
           instructions={selectedRecipe.instructions}
-          onStartCooking={() => setCurrentScreen('cooking')}
+          onStartCooking={() => navigateToScreen('cooking')}
           onEditWorkflow={() => setIsEditorOpen(true)}
         />
       )}
@@ -352,7 +422,7 @@ export const App: React.FC = () => {
           activeTaskId={activeTaskId}
           onSelectTask={setActiveTaskId}
           onCompleteTask={handleCompleteTask}
-          onExitCooking={() => setCurrentScreen('overview')}
+          onExitCooking={() => navigateToScreen('overview')}
         />
       )}
 
@@ -371,9 +441,9 @@ export const App: React.FC = () => {
               }))
             );
             setActiveTaskId(tasks[0]?.id || INITIAL_TASKS[0].id);
-            setCurrentScreen('cooking');
+            navigateToScreen('cooking');
           }}
-          onReturnToLibrary={() => setCurrentScreen('library')}
+          onReturnToLibrary={() => navigateToScreen('library')}
         />
       )}
     </AppShell>

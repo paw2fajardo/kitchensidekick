@@ -95,4 +95,26 @@ describe('MealieClient (BE-01)', () => {
       code: 'NETWORK_ERROR',
     });
   });
+
+  it('fetches recipe image using fetchImage', async () => {
+    const mockImageResponse = {
+      ok: true,
+      status: 200,
+      headers: new Headers({ 'content-type': 'image/webp' }),
+    };
+
+    const mockFetch = vi.fn().mockResolvedValue(mockImageResponse);
+    const client = new MealieClient({ baseUrl: 'http://localhost:9000', apiToken: 'test-token' }, mockFetch as any);
+
+    const response = await client.fetchImage('rec-123', 'original.webp');
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:9000/api/media/recipes/rec-123/images/original.webp',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: 'Bearer test-token',
+        }),
+      })
+    );
+    expect(response.status).toBe(200);
+  });
 });

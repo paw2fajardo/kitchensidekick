@@ -13,6 +13,7 @@ interface TimerStoreState {
   resetTimer: (id: string) => void;
   advanceStage: (id: string, nextStageName: string, nextDurationSeconds: number) => void;
   clearTimer: (id: string) => void;
+  clearAllTimers: () => void;
 }
 
 export const useTimerStore = create<TimerStoreState>()(
@@ -160,6 +161,10 @@ export const useTimerStore = create<TimerStoreState>()(
         const current = { ...get().activeTimers };
         delete current[id];
         set({ activeTimers: current });
+      },
+
+      clearAllTimers: () => {
+        set({ activeTimers: {} });
       },
     }),
     {

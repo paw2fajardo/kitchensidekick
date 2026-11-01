@@ -1,3 +1,17 @@
+export interface MealieCategoryItem {
+  id?: string;
+  name?: string;
+  slug?: string;
+  groupId?: string;
+}
+
+export interface MealieTagItem {
+  id?: string;
+  name?: string;
+  slug?: string;
+  groupId?: string;
+}
+
 export interface MealieIngredient {
   id?: string;
   title?: string | null;
@@ -35,6 +49,8 @@ export interface MealieRecipe {
   totalTime?: string | null;
   prepTime?: string | null;
   performTime?: string | null;
+  recipeCategory?: MealieCategoryItem[];
+  tags?: MealieTagItem[];
   recipeIngredient?: MealieIngredient[];
   recipeInstructions?: MealieInstruction[];
   orgURL?: string | null;
@@ -50,6 +66,8 @@ export interface MealieRecipeSummary {
   image?: string | null;
   totalTime?: string | null;
   recipeYield?: string | null;
+  recipeCategory?: MealieCategoryItem[];
+  tags?: MealieTagItem[];
 }
 
 export interface MealiePaginationResponse<T> {

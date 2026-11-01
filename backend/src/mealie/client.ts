@@ -100,4 +100,33 @@ export class MealieClient {
     }
     return this.request<MealieRecipe>(`/api/recipes/${encodeURIComponent(slug.trim())}`);
   }
+
+  public async fetchImage(recipeId: string, filename: string = 'original.webp'): Promise<Response> {
+    const url = `${this.baseUrl}/api/media/recipes/${encodeURIComponent(recipeId)}/images/${encodeURIComponent(filename)}`;
+    const headers: Record<string, string> = {
+      'Accept': 'image/webp,image/*,*/*',
+    };
+
+    if (this.apiToken) {
+      headers['Authorization'] = `Bearer ${this.apiToken}`;
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+
+    try {
+      const response = await this.fetchFn(url, {
+        headers,
+        signal: controller.signal,
+      });
+      return response;
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        throw new MealieApiError(`Image request timed out after ${this.timeoutMs}ms`, undefined, 'TIMEOUT');
+      }
+      throw new MealieApiError(`Connection failed: ${err.message || String(err)}`, undefined, 'NETWORK_ERROR');
+    } finally {
+      clearTimeout(timer);
+    }
+  }
 }
