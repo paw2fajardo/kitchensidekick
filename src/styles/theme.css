@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+@theme {
+  /* Surface and Canvas Colors */
+  --color-canvas: #F5F5F0;
+  --color-surface: #FFFFFF;
+  --color-surface-subtle: #ECEDE7;
+
+  /* Typography / Text Colors */
+  --color-text-primary: #20251F;
+  --color-text-secondary: #5F675F;
+  --color-text-disabled: #8E968E;
+
+  /* Borders and Dividers */
+  --color-border: #D9DDD4;
+  --color-border-strong: #8E968E;
+
+  /* Primary Brand (Deep Forest Green) */
+  --color-primary: #245C43;
+  --color-primary-hover: #194A35;
+  --color-primary-subtle: #E4EEE7;
+  --color-on-primary: #FFFFFF;
+
+  /* Semantic Feedback Colors */
+  --color-success: #287A4B;
+  --color-warning: #A86416;
+  --color-danger: #B33B32;
+  --color-info: #356B8C;
+  --color-focus: #245C43;
+
+  /* Semantic Phase Lane Accents (Parameterized) */
+  --color-phase-prep: #537B60;
+  --color-phase-active: #A65B45;
+  --color-phase-cooking: #A65B45;
+  --color-phase-secondary: #B17A3D;
+  --color-phase-sauce: #B17A3D;
+  --color-phase-sauce-text: #8A5A22;
+  --color-phase-finishing: #9E7B34;
+  --color-phase-finishing-text: #7A5B18;
+
+  /* Status Badges */
+  --color-status-pending: #5F675F;
+  --color-status-ready: #245C43;
+  --color-status-progress: #356B8C;
+  --color-status-blocked: #8A4E0B;
+  --color-status-completed: #287A4B;
+
+  /* Arm's-Length Typography Scale */
+  --text-display: clamp(2rem, 4vw, 2.5rem);        /* 32-40px (Display recipe titles) */
+  --text-page: clamp(1.625rem, 3vw, 2rem);        /* 26-32px (Screen titles) */
+  --text-section: clamp(1.25rem, 2.2vw, 1.5rem);   /* 20-24px (Phase names & panel headings) */
+  --text-instruction: clamp(1.25rem, 2vw, 1.5rem); /* 20-24px (Focus mode primary instructions) */
+  --text-task-title: clamp(1.125rem, 1.8vw, 1.375rem); /* 18-22px (Task card titles) */
+  --text-body: clamp(1rem, 1.5vw, 1.125rem);      /* 16-18px (General content, arm's length) */
+  --text-supporting: clamp(0.875rem, 1.2vw, 1rem); /* 14-16px (Metadata) */
+  --text-micro: 0.75rem;                          /* 12px (Compact status only) */
+
+  /* Spacing Scale (4px-based) */
+  --spacing-1: 0.25rem;  /* 4px */
+  --spacing-2: 0.5rem;   /* 8px */
+  --spacing-3: 0.75rem;  /* 12px */
+  --spacing-4: 1rem;     /* 16px */
+  --spacing-5: 1.25rem;  /* 20px */
+  --spacing-6: 1.5rem;   /* 24px */
+  --spacing-8: 2rem;     /* 32px */
+  --spacing-10: 2.5rem;  /* 40px */
+  --spacing-12: 3rem;    /* 48px */
+
+  /* Radii */
+  --radius-sm: 8px;   /* Small controls (checkbox, chip, tag) */
+  --radius-md: 10px;  /* Buttons (>=48px height) */
+  --radius-lg: 12px;  /* Task cards */
+  --radius-xl: 14px;  /* Panels */
+  --radius-2xl: 16px; /* Dialogs and drawers */
+
+  /* Elevaton - Flat surfaces on canvas; shadows reserved strictly for overlays */
+  --shadow-none: 0 0 #0000;
+  --shadow-overlay: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  /* Touch Boundaries */
+  --size-touch-target: 48px;
+  --size-touch-cta: 56px;
+}
+
+/* Base Utility Classes & Reset Helpers */
+@layer base {
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "Geist", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
