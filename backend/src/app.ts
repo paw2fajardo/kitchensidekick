@@ -5,6 +5,7 @@ import { MealieClient } from './mealie/client.js';
 import { createWorkflowsRouter } from './api/workflows.js';
 import { createSessionsRouter } from './api/sessions.js';
 import { createRecipesRouter } from './api/recipes.js';
+import { createMediaRouter } from './api/media.js';
 
 export interface AppConfig {
   repository?: IWorkflowRepository;
@@ -29,6 +30,7 @@ export function createApp(config: AppConfig = {}) {
   app.route('/api/recipes', createRecipesRouter(mealieClient));
   app.route('/api/workflows', createWorkflowsRouter(repository, mealieClient));
   app.route('/api/sessions', createSessionsRouter(repository));
+  app.route('/api/media', createMediaRouter(mealieClient));
 
   return app;
 }

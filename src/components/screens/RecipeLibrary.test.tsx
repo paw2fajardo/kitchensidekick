@@ -33,6 +33,7 @@ describe('RecipeLibrary', () => {
     const heading = await screen.findByText('Kanto-Style Sukiyaki (Simmered Beef Hot Pot)');
     expect(heading).toBeDefined();
     expect(screen.getByText('Authentic Sukiyaki Warishita Sauce Base')).toBeDefined();
+    expect(screen.getByText('Crispy Panko Pork Tonkatsu')).toBeDefined();
   });
 
   it('properly extracts items from Mealie paginated format { items: [...] }', async () => {
@@ -94,13 +95,48 @@ describe('RecipeLibrary', () => {
     });
   });
 
-  it('renders >=48px CTA buttons for each recipe', async () => {
+  it('filters recipes by protein category tab (pork, beef, chicken, fish/seafood, vegetarian)', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Network error'));
 
     renderWithClient(<RecipeLibrary />);
-    const buttons = await screen.findAllByRole('button', { name: /workflow/i });
-    expect(buttons.length).toBe(CANONICAL_RECIPES.length);
-    buttons.forEach((btn) => {
+    await screen.findByText('Kanto-Style Sukiyaki (Simmered Beef Hot Pot)');
+
+    // Click Pork Tab
+    const porkTab = screen.getByRole('tab', { name: /pork/i });
+    fireEvent.click(porkTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('Crispy Panko Pork Tonkatsu')).toBeDefined();
+      expect(screen.getByText('Buta Kakuni (Slow-Braised Pork Belly)')).toBeDefined();
+      expect(screen.queryByText('Kanto-Style Sukiyaki (Simmered Beef Hot Pot)')).toBeNull();
+      expect(screen.queryByText('Saikyo Miso-Glazed King Salmon')).toBeNull();
+    });
+
+    // Click Seafood Tab
+    const seafoodTab = screen.getByRole('tab', { name: /fish & seafood/i });
+    fireEvent.click(seafoodTab);
+
+    await waitFor(() => {
+      expect(screen.getByText('Saikyo Miso-Glazed King Salmon')).toBeDefined();
+      expect(screen.getByText('Ginger & Scallion Steamed Sea Bass')).toBeDefined();
+      expect(screen.queryByText('Crispy Panko Pork Tonkatsu')).toBeNull();
+    });
+  });
+
+  it('renders >=48px CTA buttons for all displayed recipe cards', async () => {
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Network error'));
+
+    const { container } = renderWithClient(<RecipeLibrary />);
+    await screen.findByText('Kanto-Style Sukiyaki (Simmered Beef Hot Pot)');
+
+    const cardCtas = CANONICAL_RECIPES.map((recipe) => {
+      const btn = container.querySelector(`#btn-open-recipe-${recipe.slug}`);
+      expect(btn).not.toBeNull();
+      return btn as HTMLButtonElement;
+    });
+
+    expect(cardCtas.length).toBe(CANONICAL_RECIPES.length);
+    cardCtas.forEach((btn) => {
       expect(btn.className).toContain('min-h-[48px]');
     });
   });

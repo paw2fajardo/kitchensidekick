@@ -89,11 +89,12 @@ export const ActiveCookingConsole: React.FC<ActiveCookingConsoleProps> = ({
   const progressPct = Math.round((completedCount / totalCount) * 100);
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#FFFFFF] overflow-hidden">
+    <div id="cooking-console-root" className="flex-1 flex flex-col h-full bg-[#FFFFFF] overflow-hidden">
       {/* Active Cooking Header Bar */}
-      <div className="h-16 border-b border-[#D9DDD4] bg-[#F5F5F0] px-4 md:px-8 flex items-center justify-between shrink-0">
+      <div id="cooking-console-header" className="h-16 border-b border-[#D9DDD4] bg-[#F5F5F0] px-4 md:px-8 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           <TouchButton
+            id="btn-cooking-exit"
             variant="secondary"
             onClick={onExitCooking}
             className="min-h-[48px] px-3 py-2 text-[#5F675F] hover:text-[#20251F] border border-[#D9DDD4] bg-[#FFFFFF] rounded-[10px]"
@@ -105,26 +106,27 @@ export const ActiveCookingConsole: React.FC<ActiveCookingConsoleProps> = ({
             <span className="text-[13px] font-bold uppercase tracking-wider text-[#5F675F]">
               Cooking Session
             </span>
-            <p className="text-[15px] font-bold text-[#20251F] truncate max-w-[280px] md:max-w-[400px]">
+            <p id="cooking-recipe-title" className="text-[15px] font-bold text-[#20251F] truncate max-w-[280px] md:max-w-[400px]">
               {recipeTitle}
             </p>
           </div>
         </div>
 
         {/* Global Progress Indicator */}
-        <div className="flex items-center gap-4">
+        <div id="cooking-progress-indicator" className="flex items-center gap-4">
           <div className="text-right">
-            <span className="text-[12px] font-bold text-[#5F675F] uppercase tracking-wider">
+            <span id="cooking-step-progress-label" className="text-[12px] font-bold text-[#5F675F] uppercase tracking-wider">
               Step {currentIndex + 1} of {totalCount}
             </span>
             <div className="flex items-center gap-2">
               <div className="w-24 md:w-36 h-2 bg-[#D9DDD4] rounded-full overflow-hidden">
                 <div 
+                  id="cooking-progress-bar-fill"
                   className="h-full bg-[#245C43] transition-all duration-300" 
                   style={{ width: `${progressPct}%` }}
                 />
               </div>
-              <span className="text-[13px] font-mono font-bold text-[#20251F]">
+              <span id="cooking-progress-pct" className="text-[13px] font-mono font-bold text-[#20251F]">
                 {progressPct}%
               </span>
             </div>
@@ -199,7 +201,7 @@ export const ActiveCookingConsole: React.FC<ActiveCookingConsoleProps> = ({
                       </span>
                     )}
                   </div>
-                  <div className={`font-mono text-[40px] md:text-[48px] font-bold leading-none tracking-tight ${
+                  <div id="step-timer-display" className={`font-mono text-[40px] md:text-[48px] font-bold leading-none tracking-tight ${
                     isOvertime ? 'text-[#A86416]' : 'text-[#20251F]'
                   }`}>
                     {formatTimer(remainingSeconds)}
@@ -208,8 +210,9 @@ export const ActiveCookingConsole: React.FC<ActiveCookingConsoleProps> = ({
               </div>
 
               {/* Fat-finger Touch Timer Controls */}
-              <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div id="step-timer-controls" className="flex items-center gap-3 w-full sm:w-auto">
                 <TouchButton
+                  id="btn-toggle-step-timer"
                   onClick={() => {
                     if (isRunning) {
                       pauseTimer(currentTask.id);
@@ -217,27 +220,28 @@ export const ActiveCookingConsole: React.FC<ActiveCookingConsoleProps> = ({
                       startTimer(currentTask.id);
                     }
                   }}
-                  className={`flex-1 sm:flex-none min-h-[56px] min-w-[120px] px-6 rounded-[12px] text-[16px] font-bold flex items-center justify-center gap-2 ${
-                    isRunning
-                      ? 'bg-[#FFFFFF] text-[#20251F] border border-[#D9DDD4] hover:bg-[#E6E8E2]'
-                      : 'bg-[#245C43] text-[#FFFFFF] hover:bg-[#1B4532]'
-                  }`}
+                  variant={isRunning ? 'secondary' : 'primary'}
+                  className="flex-1 sm:flex-none min-h-[56px] min-w-[120px] px-6 rounded-[12px] text-[16px] font-bold flex items-center justify-center gap-2"
                 >
                   {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 fill-current" />}
                   <span>{isRunning ? 'Pause' : 'Start Timer'}</span>
                 </TouchButton>
 
                 <TouchButton
+                  id="btn-extend-step-timer"
                   onClick={() => extendTimer(currentTask.id, 60)}
-                  className="min-h-[56px] px-4 rounded-[12px] bg-[#FFFFFF] border border-[#D9DDD4] text-[#20251F] hover:bg-[#E6E8E2] text-[15px] font-bold"
+                  variant="secondary"
+                  className="min-h-[56px] px-4 rounded-[12px] text-[15px] font-bold"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   +1 min
                 </TouchButton>
 
                 <TouchButton
+                  id="btn-reset-step-timer"
                   onClick={() => resetTimer(currentTask.id)}
-                  className="min-h-[56px] px-4 rounded-[12px] bg-[#FFFFFF] border border-[#D9DDD4] text-[#5F675F] hover:text-[#20251F] hover:bg-[#E6E8E2]"
+                  variant="secondary"
+                  className="min-h-[56px] px-4 rounded-[12px] text-[#5F675F] hover:text-[#20251F]"
                   title="Reset Timer"
                 >
                   <RotateCcw className="w-5 h-5" />
@@ -249,6 +253,7 @@ export const ActiveCookingConsole: React.FC<ActiveCookingConsoleProps> = ({
           {/* Primary Arm's-Length Completion CTA (Strictly >= 56px height) */}
           <div className="pt-6 mt-6 border-t border-[#D9DDD4]">
             <TouchButton
+              id="btn-complete-step"
               onClick={() => onCompleteTask(currentTask.id)}
               className="w-full min-h-[60px] md:min-h-[64px] bg-[#245C43] hover:bg-[#1B4532] text-[#FFFFFF] rounded-[14px] text-[18px] md:text-[20px] font-bold flex items-center justify-center gap-3 shadow-none transition-colors"
             >
@@ -286,6 +291,7 @@ export const ActiveCookingConsole: React.FC<ActiveCookingConsoleProps> = ({
               return (
                 <div
                   key={task.id}
+                  id={`queue-task-${task.id}`}
                   onClick={() => !isBlocked && onSelectTask(task.id)}
                   className={`p-3.5 rounded-[12px] border transition-all text-left relative ${
                     isActive

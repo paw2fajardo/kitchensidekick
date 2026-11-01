@@ -7,6 +7,15 @@ export const canonicalSukiyakiMealieRecipe: MealieRecipe = {
   description: 'Classic Japanese hot pot with thinly sliced beef, vegetables, tofu, and savory-sweet sauce.',
   recipeYield: '4 servings',
   totalTime: 'PT45M',
+  recipeCategory: [
+    { id: 'cat-main', name: 'Main Course', slug: 'main-course' },
+    { id: 'cat-dinner', name: 'Dinner', slug: 'dinner' },
+  ],
+  tags: [
+    { id: 'tag-beef', name: 'Beef', slug: 'beef' },
+    { id: 'tag-washoku', name: 'Washoku', slug: 'washoku' },
+    { id: 'tag-nabe', name: 'Nabe', slug: 'nabe' },
+  ],
   recipeIngredient: [
     { referenceId: 'ing-1', title: 'Beef', quantity: '400', unit: 'g', note: 'Thinly sliced ribeye or chuck' },
     { referenceId: 'ing-2', title: 'Napa Cabbage', quantity: '1/2', unit: 'head', note: 'Cut into bite-sized pieces' },

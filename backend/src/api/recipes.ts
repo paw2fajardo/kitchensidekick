@@ -28,6 +28,8 @@ export function createRecipesRouter(mealieClient: MealieClient) {
         image: canonicalSukiyakiMealieRecipe.image ?? null,
         totalTime: canonicalSukiyakiMealieRecipe.totalTime ?? null,
         recipeYield: canonicalSukiyakiMealieRecipe.recipeYield ?? null,
+        recipeCategory: canonicalSukiyakiMealieRecipe.recipeCategory ?? [],
+        tags: canonicalSukiyakiMealieRecipe.tags ?? [],
       };
 
       return c.json(

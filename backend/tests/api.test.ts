@@ -54,6 +54,31 @@ describe('Workflow & Session API Integration (BE-05 & BE-06)', () => {
     expect(data.items.length).toBe(1);
     expect(data.items[0].name).toBe('Sukiyaki');
     expect(data.items[0].slug).toBe('sukiyaki');
+    expect(data.items[0].recipeCategory?.length).toBeGreaterThan(0);
+    expect(data.items[0].tags?.length).toBeGreaterThan(0);
+  });
+
+  it('proxies recipe images from Mealie with correct headers (GET /api/media/recipes/:id/images/:filename)', async () => {
+    const mediaMealieClient = {
+      ...mockMealieClient,
+      fetchImage: vi.fn().mockResolvedValue(
+        new Response(new Uint8Array([0x52, 0x49, 0x46, 0x46]), {
+          status: 200,
+          headers: {
+            'content-type': 'image/webp',
+            'cache-control': 'public, max-age=86400',
+          },
+        })
+      ),
+    } as any;
+    const repo = new MemoryWorkflowRepository();
+    const app = createApp({ repository: repo, mealieClient: mediaMealieClient });
+
+    const res = await app.request('/api/media/recipes/test-recipe-1/images/original.webp');
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toBe('image/webp');
+    expect(res.headers.get('cache-control')).toBe('public, max-age=86400');
+    expect(mediaMealieClient.fetchImage).toHaveBeenCalledWith('test-recipe-1', 'original.webp');
   });
 
   it('generates a workflow from recipe slug (POST /api/workflows)', async () => {
